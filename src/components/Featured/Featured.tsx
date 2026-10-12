@@ -3,7 +3,6 @@ import {
   ArrowUpRight,
   ArrowRight,
   Cpu,
-  Monitor,
   Zap,
   ShieldCheck,
   Sparkles,
