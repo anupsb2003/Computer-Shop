@@ -1,0 +1,268 @@
+
+/* FIXED GLASS NAVBAR */
+
+.site-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 88px;
+  z-index: 1000;
+
+  background: rgba(8, 10, 16, 0.62);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.navbar-inner {
+  width: min(90%, 1440px);
+  height: 100%;
+  margin-inline: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+/* BRAND */
+
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+
+  color: #fff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(15px, 1.5vw, 20px);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-brand-symbol {
+  color: #c6a46a;
+  font-size: 30px;
+}
+
+.nav-brand-dot {
+  color: #c6a46a;
+}
+
+/* NAVIGATION LINKS */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 2.3vw, 34px);
+}
+
+.nav-links a {
+  position: relative;
+  padding-block: 10px;
+
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+
+  transition: color 0.25s ease;
+}
+
+.nav-links a::after {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  left: 0;
+  height: 1px;
+
+  content: "";
+  background: #c6a46a;
+
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.nav-links a:hover {
+  color: #c6a46a;
+}
+
+.nav-links a:hover::after {
+  transform: scaleX(1);
+}
+
+/* SEARCH, BAG AND MENU */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.nav-actions button {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.nav-actions button:hover {
+  color: #c6a46a;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(198, 164, 106, 0.2);
+}
+
+.nav-menu-toggle {
+  display: none !important;
+}
+
+/* TABLET */
+
+@media (max-width: 950px) {
+  .navbar-inner {
+    width: 92%;
+    gap: 16px;
+  }
+
+  .nav-links {
+    gap: 16px;
+  }
+
+  .nav-links a {
+    font-size: 11px;
+  }
+
+  .nav-brand {
+    font-size: 15px;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* MOBILE MENU */
+
+@media (max-width: 760px) {
+  .site-navbar {
+    height: 76px;
+  }
+
+  .navbar-inner {
+    width: 90%;
+  }
+
+  .nav-brand {
+    font-size: 15px;
+  }
+
+  .nav-brand-symbol {
+    font-size: 26px;
+  }
+
+  .nav-menu-toggle {
+    display: grid !important;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: calc(100% + 1px);
+    right: 0;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+
+    padding: 10px 5% 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+
+    background: rgba(8, 10, 16, 0.97);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+
+    transform: translateY(-8px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease,
+      visibility 0.25s ease;
+  }
+
+  .nav-links.nav-open {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .nav-links a {
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 13px;
+  }
+
+  .nav-links a:last-child {
+    border-bottom: 0;
+  }
+
+  .nav-links a::after {
+    display: none;
+  }
+}
+
+/* SMALL MOBILE */
+
+@media (max-width: 380px) {
+  .nav-brand {
+    gap: 5px;
+    font-size: 13px;
+  }
+
+  .nav-brand-symbol {
+    font-size: 23px;
+  }
+
+  .nav-actions {
+    gap: 2px;
+  }
+
+  .nav-actions button {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-navbar,
+  .nav-links,
+  .nav-links a,
+  .nav-actions button {
+    transition: none;
+  }
+}
