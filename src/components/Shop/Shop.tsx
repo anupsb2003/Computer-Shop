@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -17,7 +17,7 @@ import {
   Sparkles,
   Phone,
   MessageCircle,
-  Mail
+  Mail,
 } from "lucide-react";
 
 import "./Shop.css";
@@ -39,7 +39,11 @@ const categories = [
       "Student Laptops",
       "Creator Laptops",
     ],
-    features: ["High-performance processors", "Dedicated graphics options", "Portable designs"],
+    features: [
+      "High-performance processors",
+      "Dedicated graphics options",
+      "Portable designs",
+    ],
   },
   {
     title: "Monitors",
@@ -57,7 +61,11 @@ const categories = [
       "Ultrawide Displays",
       "Professional Monitors",
     ],
-    features: ["High refresh rate options", "Sharp display resolutions", "Ergonomic setups"],
+    features: [
+      "High refresh rate options",
+      "Sharp display resolutions",
+      "Ergonomic setups",
+    ],
   },
   {
     title: "RAM & Memory",
@@ -75,7 +83,11 @@ const categories = [
       "Laptop Memory",
       "RGB Memory Kits",
     ],
-    features: ["Multiple capacities", "Desktop and laptop options", "Compatibility guidance"],
+    features: [
+      "Multiple capacities",
+      "Desktop and laptop options",
+      "Compatibility guidance",
+    ],
   },
   {
     title: "Processors",
@@ -93,7 +105,11 @@ const categories = [
       "Gaming CPUs",
       "Workstation CPUs",
     ],
-    features: ["Multiple performance tiers", "Gaming and workstation options", "Socket compatibility guidance"],
+    features: [
+      "Multiple performance tiers",
+      "Gaming and workstation options",
+      "Socket compatibility guidance",
+    ],
   },
   {
     title: "Graphics Cards",
@@ -111,7 +127,11 @@ const categories = [
       "Entry-Level GPUs",
       "High-Performance GPUs",
     ],
-    features: ["Multiple performance levels", "Gaming and creative workloads", "Power and case compatibility guidance"],
+    features: [
+      "Multiple performance levels",
+      "Gaming and creative workloads",
+      "Power and case compatibility guidance",
+    ],
   },
   {
     title: "Storage",
@@ -129,7 +149,11 @@ const categories = [
       "Internal Hard Drives",
       "External Storage",
     ],
-    features: ["Different storage capacities", "Fast SSD options", "Desktop and laptop compatibility"],
+    features: [
+      "Different storage capacities",
+      "Fast SSD options",
+      "Desktop and laptop compatibility",
+    ],
   },
   {
     title: "Keyboards & Mice",
@@ -147,7 +171,11 @@ const categories = [
       "Wireless Peripherals",
       "Mouse Pads",
     ],
-    features: ["Wired and wireless options", "Ergonomic designs", "Gaming and office choices"],
+    features: [
+      "Wired and wireless options",
+      "Ergonomic designs",
+      "Gaming and office choices",
+    ],
   },
   {
     title: "Audio & Headsets",
@@ -165,7 +193,11 @@ const categories = [
       "USB Microphones",
       "Desktop Speakers",
     ],
-    features: ["Wired and wireless options", "Communication-ready headsets", "Streaming audio accessories"],
+    features: [
+      "Wired and wireless options",
+      "Communication-ready headsets",
+      "Streaming audio accessories",
+    ],
   },
   {
     title: "PC Services",
@@ -183,47 +215,141 @@ const categories = [
       "PC Diagnostics",
       "Cleaning & Maintenance",
     ],
-    features: ["Build planning assistance", "Hardware compatibility checks", "Upgrade recommendations"],
+    features: [
+      "Build planning assistance",
+      "Hardware compatibility checks",
+      "Upgrade recommendations",
+    ],
   },
 ];
 
 type ShopCategory = (typeof categories)[number];
 
 export default function Shop() {
-  const [contactOpen, setContactOpen] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const horizontalSectionRef = useRef<HTMLDivElement>(null);
+  const horizontalTrackRef = useRef<HTMLDivElement>(null);
+
   const [selectedCategory, setSelectedCategory] =
     useState<ShopCategory | null>(null);
 
+  const [contactOpen, setContactOpen] = useState(false);
+
+  // Scroll vertically to move the category track from right to left.
   useEffect(() => {
-    if (!selectedCategory) return;
+    const section = horizontalSectionRef.current;
+    const track = horizontalTrackRef.current;
+
+    if (!section || !track) return;
+
+    let frameId = 0;
+
+    const updateScroll = () => {
+      cancelAnimationFrame(frameId);
+
+      frameId = requestAnimationFrame(() => {
+        // On mobile, allow visitors to swipe through the cards.
+        if (window.innerWidth <= 760) {
+          track.style.transform = "none";
+          return;
+        }
+
+        const sectionTop =
+          section.getBoundingClientRect().top + window.scrollY;
+
+        const scrollDistance = Math.max(
+          1,
+          section.offsetHeight - window.innerHeight
+        );
+
+        const progress = Math.min(
+          1,
+          Math.max(
+            0,
+            (window.scrollY - sectionTop) / scrollDistance
+          )
+        );
+
+        const maxTranslate = Math.max(
+          0,
+          track.scrollWidth - window.innerWidth
+        );
+
+        track.style.transform = `translate3d(${
+          -maxTranslate * progress
+        }px, 0, 0)`;
+      });
+    };
+
+    updateScroll();
+
+    window.addEventListener("scroll", updateScroll, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", updateScroll);
+
+    const resizeObserver = new ResizeObserver(updateScroll);
+    resizeObserver.observe(track);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener("scroll", updateScroll);
+      window.removeEventListener("resize", updateScroll);
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  // Lock background scrolling when either modal is open.
+  useEffect(() => {
+    if (!selectedCategory && !contactOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setSelectedCategory(null);
+        setContactOpen(false);
       }
     };
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedCategory]);
+  }, [selectedCategory, contactOpen]);
 
-  const openCategory = (category: ShopCategory) => {
-    setSelectedCategory(category);
-  };
-
-  const closeModal = () => {
+  const closeCategoryModal = () => {
     setSelectedCategory(null);
   };
 
+  const exploreCategory = (category: ShopCategory) => {
+    setSelectedCategory(null);
+
+    window.setTimeout(() => {
+      window.dispatchEvent(
+        new CustomEvent("shop:category-selected", {
+          detail: {
+            id: category.id,
+            title: category.title,
+          },
+        })
+      );
+    }, 200);
+  };
+
+  const closeContactModal = () => {
+    setContactOpen(false);
+  };
+
   return (
-    <section className="shop-section" id="shop">
+    <section className="shop-section" id="shop" ref={sectionRef}>
       <div className="shop-container">
+        {/* SECTION HEADING */}
         <div className="shop-heading">
           <div className="shop-heading-copy">
             <p className="shop-eyebrow">
@@ -247,52 +373,63 @@ export default function Shop() {
           </a>
         </div>
 
-        <div className="shop-category-grid">
-          {categories.map((category, index) => {
-            const Icon = category.icon;
+        {/* HORIZONTAL SCROLLING CATEGORY SHOWCASE */}
+        <div
+          className="shop-horizontal-section"
+          ref={horizontalSectionRef}
+        >
+          <div className="shop-horizontal-sticky">
+            <div
+              className="shop-category-grid"
+              ref={horizontalTrackRef}
+            >
+              {categories.map((category, index) => {
+                const Icon = category.icon;
 
-            return (
-              <button
-                type="button"
-                className="shop-category-card"
-                key={category.id}
-                style={{ animationDelay: `${index * 60}ms` }}
-                onClick={() => openCategory(category)}
-                aria-label={`View details about ${category.title}`}
-              >
-                <div className="shop-card-image">
-                  <img
-                    src={category.image}
-                    alt={category.title}
-                    loading="lazy"
-                  />
+                return (
+                  <button
+                    type="button"
+                    className="shop-category-card"
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category)}
+                    aria-label={`View details about ${category.title}`}
+                  >
+                    <div className="shop-card-image">
+                      <img
+                        src={category.image}
+                        alt={category.title}
+                        loading="lazy"
+                      />
 
-                  <div className="shop-image-overlay" />
+                      <div className="shop-image-overlay" />
 
-                  <span className="shop-card-icon">
-                    <Icon size={20} strokeWidth={1.6} />
-                  </span>
+                      <span className="shop-card-icon">
+                        <Icon size={20} strokeWidth={1.6} />
+                      </span>
 
-                  <span className="shop-card-number">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </div>
+                      <span className="shop-card-number">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                    </div>
 
-                <div className="shop-card-content">
-                  <div>
-                    <h3>{category.title}</h3>
-                    <p>{category.description}</p>
-                  </div>
+                    <div className="shop-card-content">
+                      <div>
+                        <h3>{category.title}</h3>
+                        <p>{category.description}</p>
+                      </div>
 
-                  <span className="shop-card-arrow">
-                    <ArrowRight size={18} />
-                  </span>
-                </div>
-              </button>
-            );
-          })}
+                      <span className="shop-card-arrow">
+                        <ArrowRight size={18} />
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
+        {/* CUSTOM PC SERVICE BANNER */}
         <div className="shop-service-banner">
           <div className="shop-service-icon">
             <Wrench size={25} />
@@ -300,7 +437,9 @@ export default function Shop() {
 
           <div className="shop-service-copy">
             <span>NEED A CUSTOM SETUP?</span>
+
             <h3>Let's build your perfect PC.</h3>
+
             <p>
               Get help choosing components, upgrading your system,
               or building a PC tailored to your needs.
@@ -308,24 +447,23 @@ export default function Shop() {
           </div>
 
           <button
-  type="button"
-  className="shop-service-button"
-  onClick={() => setContactOpen(true)}
->
-  Talk to our team
-  <ArrowUpRight size={17} />
-</button>
+            type="button"
+            className="shop-service-button"
+            onClick={() => setContactOpen(true)}
+          >
+            Talk to our team
+            <ArrowUpRight size={17} />
+          </button>
         </div>
       </div>
 
       {/* CATEGORY DETAILS MODAL */}
-
       {selectedCategory && (
         <div
           className="shop-modal-backdrop"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
-              closeModal();
+              closeCategoryModal();
             }
           }}
         >
@@ -338,7 +476,7 @@ export default function Shop() {
             <button
               type="button"
               className="shop-modal-close"
-              onClick={closeModal}
+              onClick={closeCategoryModal}
               aria-label="Close category details"
             >
               <X size={21} />
@@ -381,7 +519,10 @@ export default function Shop() {
 
                 <div className="shop-modal-product-list">
                   {selectedCategory.products.map((product) => (
-                    <div key={product} className="shop-modal-product">
+                    <div
+                      key={product}
+                      className="shop-modal-product"
+                    >
                       <CheckCircle2 size={16} />
                       <span>{product}</span>
                     </div>
@@ -399,21 +540,7 @@ export default function Shop() {
                 <button
                   type="button"
                   className="shop-modal-primary"
-                  onClick={() => {
-                    const category = selectedCategory;
-                    closeModal();
-
-                    window.setTimeout(() => {
-                      window.dispatchEvent(
-                        new CustomEvent("shop:category-selected", {
-                          detail: {
-                            id: category.id,
-                            title: category.title,
-                          },
-                        })
-                      );
-                    }, 200);
-                  }}
+                  onClick={() => exploreCategory(selectedCategory)}
                 >
                   Explore Products
                   <ArrowUpRight size={17} />
@@ -422,7 +549,7 @@ export default function Shop() {
                 <button
                   type="button"
                   className="shop-modal-secondary"
-                  onClick={closeModal}
+                  onClick={closeCategoryModal}
                 >
                   Continue Browsing
                 </button>
@@ -432,97 +559,103 @@ export default function Shop() {
         </div>
       )}
 
-{contactOpen && (
-  <div
-    className="shop-contact-backdrop"
-    onMouseDown={(event) => {
-      if (event.target === event.currentTarget) {
-        setContactOpen(false);
-      }
-    }}
-  >
-    <div
-      className="shop-contact-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="shop-contact-title"
-    >
-      <button
-        type="button"
-        className="shop-contact-close"
-        onClick={() => setContactOpen(false)}
-        aria-label="Close contact options"
-      >
-        <X size={21} />
-      </button>
-
-      <span className="shop-contact-eyebrow">
-        THANMAYI ENTERPRISES
-      </span>
-
-      <h2 id="shop-contact-title">
-        Let's talk <span>technology.</span>
-      </h2>
-
-      <p className="shop-contact-description">
-        Need help choosing a laptop, upgrading your PC, or
-        building a custom setup? Contact our team using your
-        preferred method.
-      </p>
-
-      <div className="shop-contact-options">
-        <a
-          className="shop-contact-option"
-          href="tel:+919611165613"
+      {/* CONTACT OPTIONS MODAL */}
+      {contactOpen && (
+        <div
+          className="shop-contact-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeContactModal();
+            }
+          }}
         >
-          <span className="shop-contact-icon">
-            <Phone size={21} />
-          </span>
-          <span className="shop-contact-text">
-            <strong>Call Us</strong>
-            <small>Speak with our team</small>
-          </span>
-          <ArrowUpRight size={17} />
-        </a>
+          <div
+            className="shop-contact-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="shop-contact-title"
+          >
+            <button
+              type="button"
+              className="shop-contact-close"
+              onClick={closeContactModal}
+              aria-label="Close contact options"
+            >
+              <X size={21} />
+            </button>
 
-        <a
-          className="shop-contact-option"
-          href="https://wa.me/919611165613?text=Hello%20Thanmayi%20Enterprises%2C%20I%20would%20like%20to%20know%20more%20about%20your%20products%20and%20services."
-          target="_blank"
-          rel="noreferrer"
-        >
-          <span className="shop-contact-icon">
-            <MessageCircle size={21} />
-          </span>
-          <span className="shop-contact-text">
-            <strong>WhatsApp Message</strong>
-            <small>Chat with us directly</small>
-          </span>
-          <ArrowUpRight size={17} />
-        </a>
+            <span className="shop-contact-eyebrow">
+              THANMAYI ENTERPRISES
+            </span>
 
-        <a
-          className="shop-contact-option"
-          href="mailto:Chandru.chandrashekar8@gmail.com?subject=Product%20Enquiry%20-%20Thanmayi%20Enterprises"
-        >
-          <span className="shop-contact-icon">
-            <Mail size={21} />
-          </span>
-          <span className="shop-contact-text">
-            <strong>Email Us</strong>
-            <small>Send a product enquiry</small>
-          </span>
-          <ArrowUpRight size={17} />
-        </a>
-      </div>
+            <h2 id="shop-contact-title">
+              Let's talk <span>technology.</span>
+            </h2>
 
-      <p className="shop-contact-note">
-        We're happy to help you find the right setup.
-      </p>
-    </div>
-  </div>
-)}
+            <p className="shop-contact-description">
+              Need help choosing a laptop, upgrading your PC, or
+              building a custom setup? Contact our team using your
+              preferred method.
+            </p>
 
+            <div className="shop-contact-options">
+              <a
+                className="shop-contact-option"
+                href="tel:+919611165613"
+              >
+                <span className="shop-contact-icon">
+                  <Phone size={21} />
+                </span>
+
+                <span className="shop-contact-text">
+                  <strong>Call Us</strong>
+                  <small>Speak with our team</small>
+                </span>
+
+                <ArrowUpRight size={17} />
+              </a>
+
+              <a
+                className="shop-contact-option"
+                href="https://wa.me/919611165613?text=Hello%20Thanmayi%20Enterprises%2C%20I%20would%20like%20to%20know%20more%20about%20your%20products%20and%20services."
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="shop-contact-icon">
+                  <MessageCircle size={21} />
+                </span>
+
+                <span className="shop-contact-text">
+                  <strong>WhatsApp Message</strong>
+                  <small>Chat with us directly</small>
+                </span>
+
+                <ArrowUpRight size={17} />
+              </a>
+
+              <a
+                className="shop-contact-option"
+                href="mailto:Chandru.chandrashekar8@gmail.com?subject=Product%20Enquiry%20-%20Thanmayi%20Enterprises"
+              >
+                <span className="shop-contact-icon">
+                  <Mail size={21} />
+                </span>
+
+                <span className="shop-contact-text">
+                  <strong>Email Us</strong>
+                  <small>Send a product enquiry</small>
+                </span>
+
+                <ArrowUpRight size={17} />
+              </a>
+            </div>
+
+            <p className="shop-contact-note">
+              We're happy to help you find the right setup.
+            </p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

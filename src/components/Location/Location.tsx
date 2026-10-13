@@ -2,8 +2,7 @@
 import { MapPin, Navigation, ExternalLink } from "lucide-react";
 import "./Location.css";
 
-const mapUrl = "https://www.google.com/maps/place/Thanmayi+Enterprises/@12.8708272,77.6538041,1106m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3bae6d22b3d45825:0x924d14ebce603fa1!8m2!3d12.870822!4d77.656379!16s%2Fg%2F11kkzl_n19?entry=ttu&g_ep=EgoyMDI2MTAwNy4wIKXMDSoASAFQAw%3D%3D";
-
+const mapUrl = "https://maps.app.goo.gl/ZuvQH7kqAQ26YDQZ7?g_st=iwb";
 const embedUrl =
   "https://maps.google.com/maps?q=12.870822,77.656379&z=16&output=embed";
 
