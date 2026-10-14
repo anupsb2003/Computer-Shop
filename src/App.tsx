@@ -7,9 +7,9 @@ import Footer from "./components/Footer/Footer";
 import "./App.css";
 import Shop from "./components/Shop/Shop";
 import Location from "./components/Location/Location";
-import ReviewPage from "./components/ReviewPage/ReviewPage";
 import CardUI from "./components/CardUI/CardUI";
 import GoogleReviews from "./components/GoogleReviews/GoogleReviews";
+import Contact from "./components/Contact/Contact";
 
 export default function App() {
   return (
@@ -24,7 +24,7 @@ export default function App() {
         <Featured />
         <Location />
         <GoogleReviews />
-        <ReviewPage />
+        <Contact />
       </main>
 
       <Footer />

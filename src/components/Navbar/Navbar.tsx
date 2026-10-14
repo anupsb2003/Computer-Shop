@@ -12,7 +12,7 @@ const navItems = [
   { label: "Home", href: "#home" },
   { label: "Shop", href: "#shop" },
   { label: "Featured", href: "#featured" },
-  { label: "Categories", href: "#categories" },
+  { label: "Services", href: "#cardui" },
   { label: "Contact", href: "#contact" },
 ];
 

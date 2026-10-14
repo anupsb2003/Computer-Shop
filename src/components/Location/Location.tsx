@@ -2,7 +2,7 @@
 import { MapPin, Navigation, ExternalLink } from "lucide-react";
 import "./Location.css";
 
-const mapUrl = "https://maps.app.goo.gl/ZuvQH7kqAQ26YDQZ7?g_st=iwb";
+const mapUrl = "https://www.google.com/maps/dir/?api=1&destination=12.870822,77.656379&destination_place_id=ChIJJVg0syJtuj4Rofpg4-sUTZQ";
 const embedUrl =
   "https://maps.google.com/maps?q=12.870822,77.656379&z=16&output=embed";
 

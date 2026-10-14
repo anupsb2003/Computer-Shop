@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@emailjs/browser@^5.0.3":
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/@emailjs/browser/-/browser-5.0.3.tgz#e2b456aac814f5e405d653368510f7d3f5b6a8cc"
+  integrity sha512-4HGAkWdzql7mrG34ZFFj7IDJNRgtbl1+yVgHdQJ6XSfhq9gxGUHtttr4UKNi7Fk++1hMXRHy1lTeGZrkioOtsw==
+
 "@oxc-project/types@=0.153.0":
   version "0.153.0"
   resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.153.0.tgz#ac7cd0095a6db231a892d41310ddf2e1b2329bfc"
