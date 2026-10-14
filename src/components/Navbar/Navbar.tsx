@@ -33,7 +33,7 @@ export default function Navbar() {
           <span className="nav-brand-symbol">T.</span>
           <span>
             Thanmayi Enterprises
-            <span className="nav-brand-dot">.</span>
+            <span className="nav-brand-dot"></span>
           </span>
         </a>
 
